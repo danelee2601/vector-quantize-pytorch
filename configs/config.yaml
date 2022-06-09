@@ -1,0 +1,23 @@
+dataset:
+  dataset_dir: 'datasets/imagenet-mini'
+  batch_size: 128   # following VQ-VAE
+  num_workers: 0
+  resize: 128
+
+exp_params:
+  LR: 0.001
+  weight_decay: 0.00001
+
+trainer_params:
+  gpus:
+    - 0
+  max_epochs: 10
+
+model_name: 'VQ-VAE'
+
+VQ-VAE:
+  dim: 256
+  codebook_size: 512
+  decay: 0.99
+  commitment_weight: 0.25
+

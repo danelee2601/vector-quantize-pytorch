@@ -365,6 +365,9 @@ class VectorQuantize(nn.Module):
         return self._codebook.embed
 
     def forward(self, x):
+        """
+        x: (B, N, D)
+        """
         shape, device, heads, is_multiheaded, codebook_size = x.shape, x.device, self.heads, self.heads > 1, self.codebook_size
 
         need_transpose = not self.channel_last and not self.accept_image_fmap
