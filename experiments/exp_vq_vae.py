@@ -39,7 +39,7 @@ class ExpVQVAE(ExpBase):
         z = self.encoder(x)
         h, w = z.shape[2], z.shape[3]
         z = rearrange(z, 'b c h w -> b (h w) c')
-        z_q, indices, commit_loss = self.vq_model(z)
+        z_q, indices, commit_loss, perplexity = self.vq_model(z)
         z_q = rearrange(z, 'b (h w) c -> b c h w', h=h, w=w)
         xhat = self.decoder(z_q)
         recons_loss = F.mse_loss(xhat, x)
@@ -52,7 +52,10 @@ class ExpVQVAE(ExpBase):
         sch.step()
 
         # log
-        loss_hist = {'loss': loss, 'recons_loss': recons_loss, 'commit_loss': commit_loss}
+        loss_hist = {'loss': loss,
+                     'recons_loss': recons_loss,
+                     'commit_loss': commit_loss,
+                     'perplexity': perplexity}
 
         detach_the_unnecessary(loss_hist)
         return loss_hist
@@ -64,7 +67,7 @@ class ExpVQVAE(ExpBase):
         z = self.encoder(x)
         h, w = z.shape[2], z.shape[3]
         z = rearrange(z, 'b c h w -> b (h w) c')
-        z_q, indices, commit_loss = self.vq_model(z)
+        z_q, indices, commit_loss, perplexity = self.vq_model(z)
         z_q = rearrange(z, 'b (h w) c -> b c h w', h=h, w=w)
         xhat = self.decoder(z_q)
         recons_loss = F.mse_loss(xhat, x)
@@ -73,7 +76,10 @@ class ExpVQVAE(ExpBase):
         loss = recons_loss + commit_loss
 
         # log
-        loss_hist = {'loss': loss, 'recons_loss': recons_loss, 'commit_loss': commit_loss}
+        loss_hist = {'loss': loss,
+                     'recons_loss': recons_loss,
+                     'commit_loss': commit_loss,
+                     'perplexity': perplexity}
 
         detach_the_unnecessary(loss_hist)
         return loss_hist

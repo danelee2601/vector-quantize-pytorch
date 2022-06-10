@@ -11,9 +11,9 @@ exp_params:
 trainer_params:
   gpus:
     - 0
-  max_epochs: 10
+  max_epochs: 3
 
-model_name: 'VQ-VAE'
+model_name: 'RQ-VAE'
 
 VQ-VAE:
   dim: 256
@@ -21,3 +21,8 @@ VQ-VAE:
   decay: 0.99
   commitment_weight: 0.25
 
+RQ-VAE:
+  dim: 256
+  codebook_size: 512
+  decay: 0.99
+  num_quantizers: 8

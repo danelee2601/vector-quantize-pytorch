@@ -125,6 +125,9 @@ class EuclideanCodebook(nn.Module):
         else:
             self.register_buffer('embed', embed)
 
+        self.embed_onehot = None
+        self.perplexity = None
+
     @torch.jit.ignore
     def init_embed_(self, data):
         if self.initted:
@@ -190,7 +193,14 @@ class EuclideanCodebook(nn.Module):
             self.embed.data.copy_(embed_normalized)
             self.expire_codes_(x)
 
+        # perplexity
+        avg_probs = torch.mean(embed_onehot, dim=0)  # (K,)
+        perplexity = torch.exp(-torch.sum(avg_probs * torch.log(avg_probs + 1e-10)))
+        self.embed_onehot = embed_onehot.detach().cpu()
+        self.perplexity = perplexity.detach().cpu()
+
         return quantize, embed_ind
+
 
 class CosineSimCodebook(nn.Module):
     def __init__(
@@ -229,6 +239,9 @@ class CosineSimCodebook(nn.Module):
             self.embed = nn.Parameter(embed)
         else:
             self.register_buffer('embed', embed)
+
+        self.embed_onehot = None
+        self.perplexity = None
 
     @torch.jit.ignore
     def init_embed_(self, data):
@@ -297,10 +310,16 @@ class CosineSimCodebook(nn.Module):
             ema_inplace(self.embed, embed_normalized, self.decay)
             self.expire_codes_(x)
 
+        # perplexity
+        avg_probs = torch.mean(embed_onehot, dim=0)  # (K,)
+        perplexity = torch.exp(-torch.sum(avg_probs * torch.log(avg_probs + 1e-10)))
+        self.embed_onehot = embed_onehot.detach().cpu()
+        self.perplexity = perplexity.detach().cpu()
+
         return quantize, embed_ind
 
-# main class
 
+# main class
 class VectorQuantize(nn.Module):
     def __init__(
         self,
@@ -425,4 +444,4 @@ class VectorQuantize(nn.Module):
             quantize = rearrange(quantize, 'b (h w) c -> b c h w', h = height, w = width)
             embed_ind = rearrange(embed_ind, 'b (h w) ... -> b h w ...', h = height, w = width)
 
-        return quantize, embed_ind, loss
+        return quantize, embed_ind, loss, self._codebook.perplexity
