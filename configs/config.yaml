@@ -1,6 +1,6 @@
 dataset:
   dataset_dir: 'datasets/imagenet-mini'
-  batch_size: 128   # following VQ-VAE
+  batch_size: 64
   num_workers: 0
   resize: 128
 
@@ -13,13 +13,16 @@ trainer_params:
     - 0
   max_epochs: 3
 
-model_name: 'RQ-VAE'
+model_name: 'VQ-VAE'
 
 VQ-VAE:
   dim: 256
   codebook_size: 512
   decay: 0.99
   commitment_weight: 0.25
+  codebook_dim: 16
+  use_cosine_sim: True
+  kmeans_init: True
 
 RQ-VAE:
   dim: 256

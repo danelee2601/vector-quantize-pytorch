@@ -32,7 +32,7 @@ class ResidualVQ(nn.Module):
 
         all_losses = []
         all_indices = []
-        embed_onehots = torch.zeros((x.shape[0] * x.shape[1], self.codebook_size))
+        embed_onehots = torch.zeros((x.shape[0] * x.shape[1], self.codebook_size)).to(x.device)
         for layer in self.layers:
             quantized, indices, loss, _ = layer(residual)
             embed_onehots += layer._codebook.embed_onehot

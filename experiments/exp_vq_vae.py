@@ -15,17 +15,10 @@ class ExpVQVAE(ExpBase):
                  n_train_samples: int = None):
         super().__init__()
         dim = config['VQ-VAE']['dim']
-        codebook_size = config['VQ-VAE']['codebook_size']
-        decay = config['VQ-VAE']['decay']
-        commitment_weight = config['VQ-VAE']['commitment_weight']
 
         self.encoder = VQVAEEncoder(dim)
         self.decoder = VQVAEDecoder(dim)
-        self.vq_model = VectorQuantize(dim=dim,
-                                       codebook_size=codebook_size,          # codebook size
-                                       decay=decay,                          # the exponential moving average decay, lower means the dictionary will change faster
-                                       commitment_weight=commitment_weight   # the weight on the commitment loss
-                                       )
+        self.vq_model = VectorQuantize(**config['VQ-VAE'])
         self.config = config
         self.T_max = config['trainer_params']['max_epochs'] * (np.ceil(n_train_samples / config['dataset']['batch_size']) )
 

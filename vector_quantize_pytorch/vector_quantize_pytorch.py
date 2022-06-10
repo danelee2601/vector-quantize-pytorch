@@ -196,8 +196,8 @@ class EuclideanCodebook(nn.Module):
         # perplexity
         avg_probs = torch.mean(embed_onehot, dim=0)  # (K,)
         perplexity = torch.exp(-torch.sum(avg_probs * torch.log(avg_probs + 1e-10)))
-        self.embed_onehot = embed_onehot.detach().cpu()
-        self.perplexity = perplexity.detach().cpu()
+        self.embed_onehot = embed_onehot.detach() #.cpu()
+        self.perplexity = perplexity.detach() #.cpu()
 
         return quantize, embed_ind
 
@@ -313,8 +313,8 @@ class CosineSimCodebook(nn.Module):
         # perplexity
         avg_probs = torch.mean(embed_onehot, dim=0)  # (K,)
         perplexity = torch.exp(-torch.sum(avg_probs * torch.log(avg_probs + 1e-10)))
-        self.embed_onehot = embed_onehot.detach().cpu()
-        self.perplexity = perplexity.detach().cpu()
+        self.embed_onehot = embed_onehot.detach()#.cpu()
+        self.perplexity = perplexity.detach()#.cpu()
 
         return quantize, embed_ind
 
@@ -406,7 +406,7 @@ class VectorQuantize(nn.Module):
         quantize, embed_ind = self._codebook(x)
 
         if self.training:
-            quantize = x + (quantize - x).detach()
+            quantize = x + (quantize - x).detach()  # allows `z`-part to be trainable while `z_q`-part is un-trainable. `z_q` is updated by the EMA.
 
         loss = torch.tensor([0.], device = device, requires_grad = self.training)
 

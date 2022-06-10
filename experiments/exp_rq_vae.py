@@ -14,18 +14,10 @@ class ExpRQVAE(ExpVQVAE):
                  n_train_samples: int = None):
         super().__init__(config, n_train_samples)
         dim = config['RQ-VAE']['dim']
-        codebook_size = config['RQ-VAE']['codebook_size']
-        decay = config['RQ-VAE']['decay']
-        num_quantizers = config['RQ-VAE']['num_quantizers']
 
         self.encoder = VQVAEEncoder(dim)
         self.decoder = VQVAEDecoder(dim)
-        self.vq_model = ResidualVQ(
-            dim=dim,
-            codebook_size=codebook_size,    # codebook size
-            decay=decay,                    # the exponential moving average decay, lower means the dictionary will change faster
-            num_quantizers=num_quantizers,  # specify number of quantizers
-        )
+        self.vq_model = ResidualVQ(**config['RQ-VAE'])
         self.config = config
         self.T_max = config['trainer_params']['max_epochs'] * (
             np.ceil(n_train_samples / config['dataset']['batch_size']))
